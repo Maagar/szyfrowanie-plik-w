@@ -1,0 +1,66 @@
+services:
+
+  java-benchmark:
+    build:
+      context: ./java
+      dockerfile: Dockerfile
+    container_name: crypto_java
+    volumes:
+      - ./results:/results
+      - ./test-files:/test-files
+    environment:
+      - RESULTS_FILE=/results/benchmark_results.csv
+      - TEST_FILES_DIR=/test-files
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 2G
+    cpuset: "0-5"   # Ryzen 5 5700X3D ma 8 rdzeni / 16 wątków — zostawiamy 2 dla hosta
+
+  csharp-benchmark:
+    build:
+      context: ./csharp
+    container_name: crypto_csharp
+    volumes:
+      - ./results:/results
+      - ./test-files:/test-files
+    environment:
+      - RESULTS_FILE=/results/benchmark_results.csv
+      - TEST_FILES_DIR=/test-files
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 2G
+    cpuset: "0-5"
+
+  python-benchmark:
+    build:
+      context: ./python
+    container_name: crypto_python
+    volumes:
+      - ./results:/results
+      - ./test-files:/test-files
+    environment:
+      - RESULTS_FILE=/results/benchmark_results.csv
+      - TEST_FILES_DIR=/test-files
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 2G
+    cpuset: "0-5"
+    
+  visualize:
+    build:
+      context: ./visualize
+    container_name: crypto_visualize
+    volumes:
+      - ./results:/results
+    environment:
+      - RESULTS_FILE=/results/benchmark_results.csv
+      - OUTPUT_DIR=/results/charts

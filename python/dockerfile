@@ -1,0 +1,11 @@
+FROM python:3.13-alpine
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir cryptography
+
+COPY benchmark.py .
+COPY benchmark_pure.py .
+COPY pure_crypto.py .
+
+CMD ["python", "benchmark.py"]
