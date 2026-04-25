@@ -14,10 +14,31 @@ public class CryptoBenchmark {
     private static final int   RUNS          = 3;
 
     public static void main(String[] args) throws Exception {
+        System.out.println("Warming up JVM (10,000 iterations)...");
+        byte[] dummy = new byte[1024]; // 1KB for speed
+        CipherStrategy warmupGcm = new AesGcmCipher();
+        CipherStrategy warmupChacha = new ChaCha20Cipher();
+        CipherStrategy warmupTdes = new TripleDesCipher();
+        
+        for (int i = 0; i < 10000; i++) {
+            byte[] encGcm = warmupGcm.encrypt(dummy);
+            warmupGcm.decrypt(encGcm);
+            
+            byte[] encChacha = warmupChacha.encrypt(dummy);
+            warmupChacha.decrypt(encChacha);
+            
+            byte[] encTdes = warmupTdes.encrypt(dummy);
+            warmupTdes.decrypt(encTdes);
+        }
+        dummy = null;
+        System.gc();
+        System.out.println("Warmup complete. Starting benchmarks.");
+
         for (int sizeMb : FILE_SIZES_MB) {
             Path testFile = Paths.get(TEST_FILES_DIR, "test_" + sizeMb + "mb.bin");
             runBenchmark("AES-256-GCM",      new AesGcmCipher(),   testFile, sizeMb);
             runBenchmark("ChaCha20-Poly1305", new ChaCha20Cipher(), testFile, sizeMb);
+            runBenchmark("TripleDES",        new TripleDesCipher(), testFile, sizeMb);
         }
 
         System.out.println(RESULTS_FILE);

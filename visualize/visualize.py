@@ -29,10 +29,11 @@ algorithms = sorted(set(r["algorithm"] for r in rows))
 sizes      = sorted(set(r["size_mb"]   for r in rows))
 
 COLORS = {
-    "Java":        "#f89820",
-    "CSharp":      "#9b4f96",
-    "Python":      "#3572A5",
-    "Python-pure": "#e05d44",
+    "Java-no-warmup": "#f89820",
+    "Java-warmup":    "#b06000",
+    "CSharp":         "#9b4f96",
+    "Python":         "#3572A5",
+    "Python-pure":      "#e05d44",
 }
 
 def color(lang):

@@ -5,6 +5,8 @@ import csv
 from datetime import datetime, timezone
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM, ChaCha20Poly1305
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
 
 RESULTS_FILE   = os.environ.get("RESULTS_FILE",   "/results/benchmark_results.csv")
 TEST_FILES_DIR = os.environ.get("TEST_FILES_DIR", "/test-files")
@@ -29,6 +31,29 @@ def chacha_encrypt(key, plaintext):
 
 def chacha_decrypt(key, blob):
     return ChaCha20Poly1305(key).decrypt(blob[:12], blob[12:], None)
+
+# -------------------------------------------------------------------------
+
+def triple_des_encrypt(key, plaintext):
+    iv = os.urandom(8)
+    padder = padding.PKCS7(64).padder()
+    padded_data = padder.update(plaintext) + padder.finalize()
+    
+    cipher = Cipher(algorithms.TripleDES(key), modes.CBC(iv))
+    encryptor = cipher.encryptor()
+    ct = encryptor.update(padded_data) + encryptor.finalize()
+    return iv + ct
+
+def triple_des_decrypt(key, blob):
+    iv = blob[:8]
+    ct = blob[8:]
+    
+    cipher = Cipher(algorithms.TripleDES(key), modes.CBC(iv))
+    decryptor = cipher.decryptor()
+    padded_data = decryptor.update(ct) + decryptor.finalize()
+    
+    unpadder = padding.PKCS7(64).unpadder()
+    return unpadder.update(padded_data) + unpadder.finalize()
 
 # -------------------------------------------------------------------------
 
@@ -85,5 +110,6 @@ if __name__ == "__main__":
     for size_mb in FILE_SIZES_MB:
         run_benchmark("Python",      "AES-256-GCM",      size_mb, aes_encrypt,   aes_decrypt,   AESGCM.generate_key(bit_length=256))
         run_benchmark("Python",      "ChaCha20-Poly1305", size_mb, chacha_encrypt, chacha_decrypt, ChaCha20Poly1305.generate_key())
+        run_benchmark("Python",      "TripleDES",        size_mb, triple_des_encrypt, triple_des_decrypt, os.urandom(24))
 
     print(f"{RESULTS_FILE}")
