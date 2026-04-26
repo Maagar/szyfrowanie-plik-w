@@ -11,9 +11,10 @@ public class CryptoBenchmark {
             "TEST_FILES_DIR", "/test-files");
 
     private static final int[] FILE_SIZES_MB = {10, 100, 1000};
-    private static final int   RUNS          = 3;
+    private static final int   RUNS          = 15;
 
     public static void main(String[] args) throws Exception {
+        // === WARMUP START ===
         System.out.println("Warming up JVM (10,000 iterations)...");
         byte[] dummy = new byte[1024]; // 1KB for speed
         CipherStrategy warmupGcm = new AesGcmCipher();
@@ -33,6 +34,7 @@ public class CryptoBenchmark {
         dummy = null;
         System.gc();
         System.out.println("Warmup complete. Starting benchmarks.");
+        // === WARMUP END ===
 
         for (int sizeMb : FILE_SIZES_MB) {
             Path testFile = Paths.get(TEST_FILES_DIR, "test_" + sizeMb + "mb.bin");
@@ -82,7 +84,7 @@ public class CryptoBenchmark {
             if (!Arrays.equals(original, decrypted)) integrity = false;
         }
 
-        appendCsvRow("Java", algorithm, sizeMb,
+        appendCsvRow("Java-warmup", algorithm, sizeMb,
                 median(encMs), median(decMs), median(ramMb), integrity);
 
         System.out.printf("  encrypt=%d ms  decrypt=%d ms  ram=%d MB  ok=%b%n",

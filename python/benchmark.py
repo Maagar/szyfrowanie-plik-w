@@ -12,7 +12,7 @@ RESULTS_FILE   = os.environ.get("RESULTS_FILE",   "/results/benchmark_results.cs
 TEST_FILES_DIR = os.environ.get("TEST_FILES_DIR", "/test-files")
 
 FILE_SIZES_MB = [10, 100, 1000]
-RUNS = 3
+RUNS = 15
 
 # -------------------------------------------------------------------------
 

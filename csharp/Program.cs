@@ -8,7 +8,7 @@ string resultsFile  = Environment.GetEnvironmentVariable("RESULTS_FILE")  ?? "/r
 string testFilesDir = Environment.GetEnvironmentVariable("TEST_FILES_DIR") ?? "/test-files";
 
 int[] sizes = { 10, 100, 1000 };
-const int Runs = 3;
+const int Runs = 15;
 
 foreach (int sizeMb in sizes)
 {
