@@ -33,7 +33,6 @@ COLORS = {
     "Java-warmup":    "#b06000",
     "CSharp":         "#9b4f96",
     "Python":         "#3572A5",
-    "Python-pure":      "#e05d44",
 }
 
 def color(lang):
